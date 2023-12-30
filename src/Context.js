@@ -21,41 +21,14 @@ const ContextProvider = ({ children }) => {
   const userVideo = useRef();
   const connectionRef = useRef();
 
-  // useEffect(() => {
-  //   navigator.mediaDevices
-  //     .getUserMedia({ video: true, audio: true })
-  //     .then((currentStream) => {
-  //       setStream(currentStream);
-
-  //       myVideo.current.srcObject = currentStream;
-  //     });
-
-  //   socket.on("me", (id) => setMe(id));
-
-  //   socket.on("callUser", ({ from, name: callerName, signal }) => {
-  //     setCall({ isReceivingCall: true, from, name: callerName, signal });
-  //   });
-  // }, []);
-
   useEffect(() => {
-    const emptyStream = new MediaStream();
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((currentStream) => {
+        setStream(currentStream);
 
-    // Check if the refs are defined before setting srcObject
-    if (myVideo.current) {
-      myVideo.current.srcObject = emptyStream;
-    }
-    if (userVideo.current) {
-      userVideo.current.srcObject = emptyStream;
-    }
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((currentStream) => {
-          setStream(currentStream);
-
-          myVideo.current.srcObject = currentStream;
-        });
-    }
+        myVideo.current.srcObject = currentStream;
+      });
 
     socket.on("me", (id) => setMe(id));
 
@@ -63,6 +36,33 @@ const ContextProvider = ({ children }) => {
       setCall({ isReceivingCall: true, from, name: callerName, signal });
     });
   }, []);
+
+  // useEffect(() => {
+  //   const emptyStream = new MediaStream();
+
+  //   // Check if the refs are defined before setting srcObject
+  //   if (myVideo.current) {
+  //     myVideo.current.srcObject = emptyStream;
+  //   }
+  //   if (userVideo.current) {
+  //     userVideo.current.srcObject = emptyStream;
+  //   }
+  //   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  //     navigator.mediaDevices
+  //       .getUserMedia({ video: true, audio: true })
+  //       .then((currentStream) => {
+  //         setStream(currentStream);
+
+  //         myVideo.current.srcObject = currentStream;
+  //       });
+  //   }
+
+  //   socket.on("me", (id) => setMe(id));
+
+  //   socket.on("callUser", ({ from, name: callerName, signal }) => {
+  //     setCall({ isReceivingCall: true, from, name: callerName, signal });
+  //   });
+  // }, []);
 
   const answerCall = () => {
     setCallAccepted(true);
