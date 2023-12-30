@@ -5,6 +5,7 @@ import Peer from "simple-peer";
 const SocketContext = createContext();
 
 // const socket = io("http://localhost:5000");
+// const socket = io("http://192.168.43.36:5000");
 const socket = io("https://videochat-wh0p.onrender.com");
 // const socket = io('https://warm-wildwood-81069.herokuapp.com');
 
@@ -52,9 +53,7 @@ const ContextProvider = ({ children }) => {
         .then((currentStream) => {
           setStream(currentStream);
 
-          if (myVideo.current) {
-            myVideo.current.srcObject = currentStream;
-          }
+          myVideo.current.srcObject = currentStream;
         });
     }
 
