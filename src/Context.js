@@ -16,6 +16,8 @@ const ContextProvider = ({ children }) => {
   const [name, setName] = useState("");
   const [call, setCall] = useState({});
   const [me, setMe] = useState("");
+  const [isMicrophoneOn, setIsMicrophoneOn] = useState(true);
+  const [isVideoOn, setIsVideoOn] = useState(true);
 
   const myVideo = useRef();
   const userVideo = useRef();
@@ -23,11 +25,14 @@ const ContextProvider = ({ children }) => {
 
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({ video: isVideoOn, audio: isMicrophoneOn })
       .then((currentStream) => {
         setStream(currentStream);
 
         myVideo.current.srcObject = currentStream;
+      })
+      .catch((error) => {
+        console.error("Error accessing media devices:", error);
       });
 
     socket.on("me", (id) => setMe(id));
@@ -35,34 +40,15 @@ const ContextProvider = ({ children }) => {
     socket.on("callUser", ({ from, name: callerName, signal }) => {
       setCall({ isReceivingCall: true, from, name: callerName, signal });
     });
-  }, []);
+  }, [isMicrophoneOn, isVideoOn]);
 
-  // useEffect(() => {
-  //   const emptyStream = new MediaStream();
+  const toggleMicrophone = () => {
+    setIsMicrophoneOn((prev) => !prev);
+  };
 
-  //   // Check if the refs are defined before setting srcObject
-  //   if (myVideo.current) {
-  //     myVideo.current.srcObject = emptyStream;
-  //   }
-  //   if (userVideo.current) {
-  //     userVideo.current.srcObject = emptyStream;
-  //   }
-  //   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  //     navigator.mediaDevices
-  //       .getUserMedia({ video: true, audio: true })
-  //       .then((currentStream) => {
-  //         setStream(currentStream);
-
-  //         myVideo.current.srcObject = currentStream;
-  //       });
-  //   }
-
-  //   socket.on("me", (id) => setMe(id));
-
-  //   socket.on("callUser", ({ from, name: callerName, signal }) => {
-  //     setCall({ isReceivingCall: true, from, name: callerName, signal });
-  //   });
-  // }, []);
+  const toggleVideo = () => {
+    setIsVideoOn((prev) => !prev);
+  };
 
   const answerCall = () => {
     setCallAccepted(true);
@@ -130,6 +116,10 @@ const ContextProvider = ({ children }) => {
         callUser,
         leaveCall,
         answerCall,
+        isMicrophoneOn,
+        isVideoOn,
+        toggleMicrophone,
+        toggleVideo,
       }}
     >
       {children}
